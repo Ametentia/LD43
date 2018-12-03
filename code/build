@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+PROJECT="Ludum"
+PROJECT="${PROJECT,,}"
+PROJECT="${PROJECT^}"
+
+COMPILER="clang++.exe"
+
+echo "Compiling with \"$COMPILER\"..."
+
+# Source and Executable Options
+MainSource="SFML_${PROJECT}.cpp"
+
+# Compilation Options
+CompilerFlags="--driver-mode=cl -Wno-switch -Zi -Od /MDd /MTd -imsvc ../libs/SFML/include"
+Defines="-D${PROJECT^^}_INTERNAL -D${PROJECT^^}_SLOW -D${PROJECT^^}_WINDOWS=1"
+LinkerFlags="/LIBPATH:../libs/SFML/lib sfml-audio-d.lib sfml-graphics-d.lib sfml-window-d.lib sfml-system-d.lib opengl32.lib kernel32.lib"
+
+if [ ! -d "../build" ];
+then
+    mkdir ../build
+fi
+
+pushd ../build > /dev/null
+
+$COMPILER $CompilerFlags $Defines ../code/$MainSource /link $LinkerFlags 2>&1 | grep "error\|warning" # | compile
+
+popd > /dev/null
